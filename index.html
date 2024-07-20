@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔗WL Webhook Tool🔗</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <header>
+        <h1>World Lords Webhook Tool</h1>
+    </header>
+    <div class="container">
+        <h2>Send Discord Embed</h2>
+        <input type="url" id="webhookUrl" placeholder="Enter Webhook URL" required>
+        <input type="text" id="author" placeholder="Author">
+        <textarea id="body" placeholder="Body"></textarea>
+        <input type="color" id="bodyColor" value="#000000" title="Choose Body Color">
+        <input type="text" id="fieldName" placeholder="Field Name">
+        <textarea id="fieldValue" placeholder="Field Value"></textarea>
+        <input type="url" id="thumbnailUrl" placeholder="Thumbnail URL">
+        <input type="url" id="imageUrl" placeholder="Image URL">
+        <input type="text" id="footer" placeholder="Footer">
+        <button id="sendButton" onclick="sendEmbed()">Send Embed</button>
+        <div class="links">
+            <button class="discord-button" onclick="window.location.href='https://discord.com/invite/DHq2vq9fYH'">Discord Server</button>
+            <button class="linktree-button" onclick="window.location.href='https://linktr.ee/_msa'">Creator Link Tree</button>
+        </div>
+    </div>
+
+    <script>
+        let lastSent = 0;
+
+        async function sendEmbed() {
+            const now = new Date().getTime();
+            if (now - lastSent < 5000) {
+                alert('Please wait 5 seconds before sending another embed.');
+                return;
+            }
+
+            const webhookUrl = document.getElementById('webhookUrl').value;
+            const author = document.getElementById('author').value;
+            const body = document.getElementById('body').value;
+            const bodyColor = document.getElementById('bodyColor').value;
+            const fieldName = document.getElementById('fieldName').value;
+            const fieldValue = document.getElementById('fieldValue').value;
+            const thumbnailUrl = document.getElementById('thumbnailUrl').value;
+            const imageUrl = document.getElementById('imageUrl').value;
+            const footer = document.getElementById('footer').value;
+
+            if (!webhookUrl) {
+                alert('Please enter the Webhook URL.');
+                return;
+            }
+
+            const embed = {
+                author: {
+                    name: author
+                },
+                description: body,
+                color: parseInt(bodyColor.replace("#", ""), 16),
+                fields: fieldName ? [{
+                    name: fieldName,
+                    value: fieldValue
+                }] : [],
+                thumbnail: {
+                    url: thumbnailUrl
+                },
+                image: {
+                    url: imageUrl
+                },
+                footer: {
+                    text: footer
+                }
+            };
+
+            const payload = JSON.stringify({
+                embeds: [embed]
+            });
+
+            try {
+                const response = await fetch(webhookUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: payload
+                });
+
+                if (response.ok) {
+                    alert('Embed sent successfully!');
+                    lastSent = now;
+                } else {
+                    alert('Failed to send embed.');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error sending embed.');
+            }
+        }
+    </script>
+</body>
+
+</html>
